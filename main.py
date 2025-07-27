@@ -8,25 +8,16 @@ DATA_FOLDER = "data"
 INPUT_CSV = os.path.join(DATA_FOLDER, "customers.csv")
 OUTPUT_JSON = os.path.join(DATA_FOLDER, "output.json")
 
-def read_csv_file(file_path, filter_column=None, filter_value=None):
-    """
-    Reads a CSV file into a list of dictionaries.
-    If filter_column and filter_value are provided, only matching rows are returned.
-    """
-    with open(file_path, mode='r') as file:
-        reader = csv.DictReader(file)
-        data = [row for row in reader]
-
-    if filter_column and filter_value:
-        filtered = [
-            row for row in data
-            if row.get(filter_column, "").lower() == filter_value.lower()
-        ]
-        print(f"Filtered {len(filtered)} records by {filter_column} = {filter_value}")
-        return filtered
-
-    print(f"Read {len(data)} records from {file_path}")
-    return data
+def read_csv_file(file_path, filters=None):
+    customers = []
+    with open(file_path, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if filters:
+                if not all(row.get(k) == v for k, v in filters.items()):
+                    continue
+            customers.append(row)
+    return customers
 
 def write_json_file(data, file_path):
     """
